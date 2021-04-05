@@ -3,6 +3,13 @@
     "type": "typo3-cms-extension",
     "description": "Simple frontend-editing with TYPO3",
     "license": "GPL-2.0-or-later",
+    "homepage": "https://www.mobger.de/ns-simpledataedit-typo3-extension/show/desk/",
+    "keywords": [
+        "TYPO3 CMS",
+        "Frontend",
+        "editing",
+        "Feedit"
+    ],
     "authors": [
         {
             "name": "Dr. Dieter Porth",
@@ -22,18 +29,14 @@
 
     },
     "config": {
-        "bin-dir": ".build/bin",
-        "discard-changes": true,
-        "sort-packages": true,
-        "vendor-dir": ".build/vendor"
+        "bin-dir": ".Build/bin",
+        "vendor-dir": ".Build/vendor"
     },
     "extra": {
-        "branch-alias": {
-            "dev-master": "10.0.x-dev"
-        },
         "typo3/cms": {
             "extension-key": "simpledataedit",
-            "web-dir": ".build"
+            "web-dir": ".build",
+            "cms-package-dir": "{$vendor-dir}/typo3/cms"
         }
     },
     "autoload": {
