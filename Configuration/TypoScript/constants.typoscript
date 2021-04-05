@@ -1,0 +1,22 @@
+###########################################################################
+# no condition                                                            #
+# because you should use in only in an extending-template for some tests  #
+###########################################################################
+
+    simpledataedit {
+        lib {
+            contentElement {
+                partialRootPaths.7387 = EXT:simpledataedit/Resources/Private/Partials/FluidElements/
+                layoutRootPaths.7387 = EXT:simpledataedit/Resources/Private/Layouts/FluidElements/
+                templateRootPaths.7387 = EXT:simpledataedit/Resources/Private/Templates/FluidElements/
+            }
+        }
+
+        fluidtemplate {
+            templateName = SimpledataeditTest
+            templateRootPath = EXT:simpledataedit/Resources/Private/Templates/Page/
+            layoutRootPath = EXT:simpledataedit/Resources/Private/Layouts/Page/
+            partialRootPath = EXT:simpledataedit/Resources/Private/Partials/Page/
+        }
+
+    }

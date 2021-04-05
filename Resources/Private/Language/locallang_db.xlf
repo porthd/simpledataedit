@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+    <file source-language="en" target-language="de" datatype="plaintext" original="messages" date="2021-04-01T11:11:11Z"
+          product-name="simpledataedit">
+        <header/>
+        <body>
+            <trans-unit id="simpleDataEdit.testLayout.title">
+                <source>Test page for SimpleDataEdit</source>
+                <target>Testseite für SimpleDataEdit</target>
+            </trans-unit>
+            <trans-unit id="simpleDataEdit.testLayout.testCol">
+                <source>Test column with special ColPos (only?) For SimpleDataEdit</source>
+                <target>Testspalte mit besonderer ColPos (nur?)für SimpleDataEdit</target>
+            </trans-unit>
+            <trans-unit id="extension.template.constants.blackboard.flagAllowAlways">
+                <source>Always Javascript?: Should the basic JavaScript always be loaded (true) or only when the backend user is logged in?</source>
+                <target>Immer Javascript?:Soll das Basis-JavaScript immer(true) oder nur bei eingeloggten Backenduser geladen werden?</target>
+            </trans-unit>
+            <trans-unit id="extension.template.constants.javaScript.dynamicGeneratedPath">
+                <source>Path to generated Javascript: The javascript can be selected from different extensions. The file must exist. It will be overridden by the extension, if something changed.</source>
+                <target>Pfad zum generierten Javascript: Das Javascript kann von verschiedenen Extensionen stammen. Die Datei muss vorhanden und editierbar sein. Die Datei wird von der Extension überschrieben, wenn sich etwas geändert hat.</target>
+            </trans-unit>
+            <trans-unit id="extension.template.constants.javaScript.basicLibPath">
+                <source>Path to Javascript: Do you want to use a different basic JavaScript to optimize frontend editing? Then change the path.</source>
+                <target>Pfad zum Javascript: Wollen sie ein anderes Basis-JavaScript verwenden, um das Frontend-Editing zu optimieren? Dann sollten sie den Pfad ändern.</target>
+            </trans-unit>
+            <trans-unit id="extension.template.constants.stylesheets.additionalStylesheets">
+                <source>Path to styles: Path to the stylesheet for frontenditing </source>
+                <target>Pfad zu Styles: Pfad zum Stylesheet für das Frontendediting</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
+

@@ -1,0 +1,30 @@
+###########################################################################
+# no condition                                                            #
+# because you should use in only in an extending-template for some tests  #
+###########################################################################
+
+simpledataedit.lib.dynamicContent = COA
+simpledataedit.lib.dynamicContent {
+    10 = LOAD_REGISTER
+    10.colPos.cObject = TEXT
+    10.colPos.cObject {
+        field = colPos
+        ifEmpty.cObject = TEXT
+        ifEmpty.cObject {
+            value.current = 1
+            ifEmpty = 7387
+        }
+    }
+
+    20 = CONTENT
+    20 {
+        table = tt_content
+        select {
+            orderBy = sorting
+            where = colPos=7387
+            where.insertData = 1
+        }
+    }
+
+    90 = RESTORE_REGISTER
+}

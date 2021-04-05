@@ -1,0 +1,40 @@
+
+/***************************************************************
+ *
+ *  Copyright notice
+ *
+ *  (c) 2021 Dr. Dieter Porthd <info@mobger.de>
+ *
+ *  All rights reserved
+ *
+ *  This script iSimpledataedits free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
+
+.simpledataedit {
+    background-color: #a8f8eb;
+    position: relative;
+}
+
+.simpledatapopup {
+    display: none;
+    background-color: beige;
+    opacity: 0.7;
+    position: absolute;
+    width:  50vw;
+    min-height:  4rem;
+    margin: auto;
+    overflow: scroll;
+    z-index: 7387;
+}
+.simpledatapopup.active {
+    display: block;
+    border: solid 10px #666666 ;
+}

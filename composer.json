@@ -1,0 +1,49 @@
+{
+    "name": "porthd/simpledataedit",
+    "type": "typo3-cms-extension",
+    "description": "Simple frontend-editing with TYPO3",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Dr. Dieter Porth",
+            "homepage": "https://www.mobger.de/",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "typo3/cms-core": "^10.1",
+        "typo3/cms-extbase": "^10.1",
+        "typo3/cms-install": "^10.1"
+    },
+    "replace": {
+        "porthd/simpledataedit": "self.version"
+    },
+    "require-dev": {
+
+    },
+    "config": {
+        "bin-dir": ".build/bin",
+        "discard-changes": true,
+        "sort-packages": true,
+        "vendor-dir": ".build/vendor"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "10.0.x-dev"
+        },
+        "typo3/cms": {
+            "extension-key": "simpledataedit",
+            "web-dir": ".build"
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Porthd\\Simpledataedit\\": "Classes/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Porthd\\Simpledataedit\\Tests\\": "Tests/"
+        }
+    }
+}

@@ -1,0 +1,8 @@
+# cat=simpledataedit/blackboard; type=boolean; label=LLL:EXT:simpledatatedit/Resources/Private/Language/locallang_db.xlf:extension.template.constants.blackboard.flagAllowAlways
+flagAllowAlways = 0
+# cat=simpledataedit/javascript; type=string; label=LLL:EXT:simpledatatedit/Resources/Private/Language/locallang_db.xlf:extension.template.constants.javaScript.dynamicGeneratedPath
+editDynamicJs = EXT:simpledataedit/Resources/Public/JavaScript/SimpledataeditDynamic.js
+# cat=simpledataedit/javascript; type=string; label=LLL:EXT:simpledatatedit/Resources/Private/Language/locallang_db.xlf:extension.template.constants.javaScript.basicLibPath
+editLibJs = EXT:simpledataedit/Resources/Public/JavaScript/SimpledataeditBasic.js
+# cat=simpledataedit/javascript; type=string; label=LLL:EXT:simpledatatedit/Resources/Private/Language/locallang_db.xlf:extension.template.constants.stylesheets.additionalStylesheets
+editStyle = EXT:simpledataedit/Resources/Public/Stylesheets/Simpledataedit.css

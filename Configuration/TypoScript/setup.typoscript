@@ -1,0 +1,29 @@
+###########################################################################
+# no condition                                                            #
+# because you should use in only in an extending-template for some tests  #
+###########################################################################
+
+@import 'EXT:simpledataedit/Configuration/TypoScript/Setup/*.t3s'
+
+lib.contentElement.templateRootPaths.7387 = {$simpledataedit.lib.contentElement.templateRootPaths.7387}
+lib.contentElement.partialRootPaths.7387 = {$simpledataedit.lib.contentElement.partialRootPaths.7387}
+lib.contentElement.layoutRootPaths.7387 = {$simpledataedit.lib.contentElement.layoutRootPaths.7387}
+
+page.7387 = FLUIDTEMPLATE
+page.7387 {
+    format = html
+    templateName = {$simpledataedit.fluidtemplate.templateName}
+    templateRootPaths{
+        0 = EXT:simpledataedit/Resources/Private/Templates/Page/
+        1 = {$simpledataedit.fluidtemplate.templateRootPath}
+    }
+    layoutRootPaths{
+        0 = EXT:simpledataedit/Resources/Private/Layouts/Page/
+        1 = {$simpledataedit.fluidtemplate.layoutRootPath}
+    }
+    partialRootPaths{
+        0 = EXT:simpledataedit/Resources/Private/Partials/Page/
+        1 = {$simpledataedit.fluidtemplate.partialRootPath}
+    }
+
+}
