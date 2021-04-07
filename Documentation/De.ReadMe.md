@@ -122,6 +122,25 @@ Aktuell ist es nicht möglich, die `CustomEditorInfo` durch eine eigenen Klasse 
 ### Beispiel für Editor-Klasse
 siehe im Code *simpledataedit\Classes\Editor\PlainTextEditor.php*
 
+   ### Einbau der Editor-Klasse in eigene Extension
+   Wenn sie ihre Klasse *MyVendor\MyExtension\Editor\MyEditor* definiert haben, muss diese natürlich dem System noch bekannt gegeben werden. 
+   Definieren sie in ihrer `ext_localconf.php` folgenden Code-Block:
+   ```
+     /**
+        * define your own editor-class, if you have special elements
+        */
+       $whoAmI = 'whoAmI';  // if i use the name directly, PHPStorm remarks it with a warning ;-(
+       $listOfCustomEditorClasses = [
+           \MyVendor\MyExtension\Editor\MyEditor::$whoAmI() =>
+               \MyVendor\MyExtension\Editor\MyEditor::class,
+       ];
+       \Porthd\Simpledataedit\Utilities\ConfigurationUtility::mergeCustomGlobals(
+           $listOfCustomEditorClasses
+       );
+   ```
+   Die statische Methode sorgt dafür, daß ihre Klassenname in $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['simpledataedit']['editor']['editor']['Ihr-whoAmI-Name'] eingetragen wird.
+   Um die Wahrscheinlichkeit von ungewollten Überschreibungen zu vermeiden, sollte ihr whoAmI-Name ihren vewndor-Namen enthalten. 
+
 
 ## To Do
 1. Cache für referenzierte Seiten und Datensätze. ( ein großes Problem) 

@@ -122,6 +122,25 @@ It is currently not possible to override the `CustomEditorInfo` with a separate 
 ### Example for editor class
 see in the code *simpledataedit/Classes/Editor/PlainTextEditor.php*
 
+### Installation of the editor class in its own extension
+If you have defined your class *MyVendor\MyExtension\Editor\MyEditor*, this must of course still be made known to the system.
+Define the following code block in your `ext_localconf.php`:
+   ```
+     /**
+        * define your own editor-class, if you have special elements
+        */
+       $whoAmI = 'whoAmI';  // if i use the name directly, PHPStorm remarks it with a warning ;-(
+       $listOfCustomEditorClasses = [
+           \MyVendor\MyExtension\Editor\MyEditor::$whoAmI() =>
+               \MyVendor\MyExtension\Editor\MyEditor::class,
+       ];
+       \Porthd\Simpledataedit\Utilities\ConfigurationUtility::mergeCustomGlobals(
+           $listOfCustomEditorClasses
+       );
+   ```
+The static method ensures that your class name is entered in $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['simpledataedit']['editor']['editor'] ['your-whoAmI-name'].
+To avoid the likelihood of unwanted overwrites, your whoAmI name should contain your vewndor name.
+
 ## To do
 1. Cache for referenced pages and records. ( a big problem) 
 1. I have not yet understood how to set cross-domain cookies.
