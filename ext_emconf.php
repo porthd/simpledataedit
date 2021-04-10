@@ -40,5 +40,5 @@ $EM_CONF[$_EXTKEY] = [
     'author' => 'Dr. Dieter Porth',
     'author_email' => 'info@mobger.de',
     'author_company' => 'Private',
-    'version' => '10.0.2',
+    'version' => '10.1.1',
 ];
