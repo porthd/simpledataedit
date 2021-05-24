@@ -3,7 +3,7 @@
  *
  *  Copyright notice
  *
- *  (c) 2021 Dr. Dieter Porthd <info@mobger.de>
+ *  (c) 2021 Dr. Dieter Porth <info@mobger.de>
  *
  *  All rights reserved
  *
@@ -22,7 +22,12 @@
     background-color: #a8f8eb;
     position: relative;
 }
+.yamlorpopup {
+    background-color: #f8dda8;
+    position: relative;
+}
 
+.yamlorpopup,
 .simpledatapopup {
     display: none;
     background-color: beige;
@@ -34,6 +39,7 @@
     overflow: scroll;
     z-index: 7387;
 }
+.yamlorpopup.active,
 .simpledatapopup.active {
     display: block;
     border: solid 10px #666666 ;

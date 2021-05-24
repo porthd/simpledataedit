@@ -4,7 +4,7 @@
  *
  *  Copyright notice
  *
- *  (c) 2021 Dr. Dieter Porthd <info@mobger.de>
+ *  (c) 2021 Dr. Dieter Porth <info@mobger.de>
  *
  *  All rights reserved
  *
@@ -40,6 +40,20 @@ class Simpledatapopup extends HTMLDivElement {
         this.attachShadow({mode: 'open'});
     }
 }
+class Yamlor extends HTMLDivElement {
+    constructor() {
+        super();
+        this.attachShadow({mode: 'open'});
+    }
+}
+
+// https://xd.adobe.com/view/cff448e6-d713-4d89-80a3-9a6b9dba91fc-9aa7/
+class Yamlorpopup extends HTMLDivElement {
+    constructor() {
+        super();
+        this.attachShadow({mode: 'open'});
+    }
+}
 
 if (typeof PorthdSimpledataedit === 'undefined') {
     var PorthdSimpledataedit = {};
@@ -48,7 +62,7 @@ if (typeof PorthdSimpledataedit === 'undefined') {
 PorthdSimpledataedit = {
     ...PorthdSimpledataedit, // expand object
     contentEditable: document.querySelectorAll('simpledataedit[contenteditable]'),
-    popups: document.querySelectorAll('.simpledatapopup'),
+    popups: document.querySelectorAll('.simpledatapopup, .yamlorpopup'),
     setInitialErrorMessage: function () {
         console.log('Initial error for data-conversion');
         console.log(node);
@@ -59,12 +73,10 @@ PorthdSimpledataedit = {
     ajaxCall: function (node) {
         const myPath = PorthdSimpledataedit.pathForSimpledataeditUpdate;
         const myDatas = {};
-        [
-            'editor', 'hash', 'content', 'editor', 'pid',
-            'fieldname', 'uid', 'type', 'table',
-            'identname', 'params',
-        ].forEach((value) => {
-            myDatas[value] = node.dataset[value];
+        PorthdSimpledataedit.fullPropertyList.forEach((value) => {
+            if (node.dataset.hasOwnProperty(value)){
+                myDatas[value] = node.dataset[value];
+            }
         });
         myDatas['raw'] = node.innerHTML;
         fetch(myPath, {
@@ -78,10 +90,6 @@ PorthdSimpledataedit = {
                     node.dataset.hash = result.hash;
                     return;
                 }
-                console.log('result:');
-                console.log(result);
-                console.log('OK ' + res.statusText + "\n Fragement" + node.dataset.table +
-                    '[' + node.dataset.uid + ' - ' + node.dataset.fieldname + '] by ' + node.dataset.editor);
             })
             .catch(error => {
                 const warnPop = node.parentNode.querySelector('.simpledatapopup');
@@ -90,7 +98,6 @@ PorthdSimpledataedit = {
                     '[' + node.dataset.uid + ' - ' + node.dataset.fieldname + '] by ' + node.dataset.editor + "\n" +
                     ' Returned status of ' + error.status;
                 warnPop.innerHTML = errMsg;
-                console.error(errMsg);
             });
     },
     initRender: function () {
@@ -154,8 +161,6 @@ PorthdSimpledataedit = {
         this.initPopups();
     }
 }
-
-console.log(PorthdSimpledataedit);
 
 PorthdSimpledataedit.initialze();
 

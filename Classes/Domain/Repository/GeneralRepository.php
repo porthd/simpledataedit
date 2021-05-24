@@ -7,7 +7,7 @@ namespace Porthd\Simpledataedit\Domain\Repository;
  *
  *  Copyright notice
  *
- *  (c) 2021 Dr. Dieter Porthd <info@mobger.de>
+ *  (c) 2021 Dr. Dieter Porth <info@mobger.de>
  *
  *  All rights reserved
  *
@@ -24,7 +24,8 @@ namespace Porthd\Simpledataedit\Domain\Repository;
 
 
 use PDO;
-use Porthd\Simpledataedit\Editor\CustomEditorInfo;
+
+use Porthd\Simpledataedit\Domain\Model\Arguments\EditorArguments;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -36,27 +37,27 @@ class GeneralRepository
 {
 
     /**
-     * @param CustomEditorInfo $customEditorInfo
+     * @param EditorArguments $editorArguments
      * @return mixed
      * @throws \Doctrine\DBAL\Driver\Exception
      */
-    public function getSingelData(CustomEditorInfo $customEditorInfo)
+    public function getSingelData(EditorArguments $editorArguments)
     {
         /** @var QueryBuilder $queryBuilder */
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
             ->getQueryBuilderForTable(
-                $customEditorInfo->getTable()
+                $editorArguments->getTable()
             );
 
         $queryBuilder->select(
-            $customEditorInfo->getFieldname() // will be quoted
+            $editorArguments->getFieldName() // will be quoted
         )->from(
-            $customEditorInfo->getTable() // will be quoted
+            $editorArguments->getTable() // will be quoted
         )->where(
             $queryBuilder->expr()->eq(
-                $customEditorInfo->getIdentname(), // Will be quoted
+                $editorArguments->getIdentField(), // Will be quoted
                 $queryBuilder->createNamedParameter(
-                    $customEditorInfo->getUid(),
+                    $editorArguments->getIUid(),
                     \PDO::PARAM_INT
                 )
             )
@@ -65,34 +66,102 @@ class GeneralRepository
     }
 
     /**
-     * @param CustomEditorInfo $customEditorInfo
+     * @param EditorArguments $editorArguments
      * @param string|int|float|bool $data
      * @param int $type
      * @return \Doctrine\DBAL\Driver\Statement|int
      */
-    public function updateDataOnDatabase(CustomEditorInfo $customEditorInfo, $data)
+    public function updateDataOnDatabase(EditorArguments $editorArguments, $data)
     {
         /** @var QueryBuilder $queryBuilder */
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
             ->getQueryBuilderForTable(
-                $customEditorInfo->getTable()
+                $editorArguments->getTable()
             );
 
         $queryBuilder->update(
-            $customEditorInfo->getTable() // will be quoted
+            $editorArguments->getTable() // will be quoted
         )->set(
-            $customEditorInfo->getFieldname(), // will be quoted
+            $editorArguments->getFieldName(), // will be quoted
             $data
         )->where(
             $queryBuilder->expr()->eq(
-                $customEditorInfo->getIdentname(),
+                $editorArguments->getIdentField(),
                 $queryBuilder->createNamedParameter(
-                    $customEditorInfo->getUid(),
+                    $editorArguments->getIdentValue(),
                     PDO::PARAM_INT
                 )
             )
         );
         return $queryBuilder->execute();
+    }
+
+    public function makeContentOnDatabase(EditorArguments $editorArguments, $data)
+    {
+
+    }
+
+    public function makeDataOnDatabase(EditorArguments $editorArguments, $data)
+    {
+
+    }
+
+    public function makeChildOnDatabase(EditorArguments $editorArguments, $data)
+    {
+
+    }
+
+    public function makeProgenitorOnDatabase(EditorArguments $editorArguments, $data)
+    {
+
+    }
+
+    public function makePeerOnDatabase(EditorArguments $editorArguments, $data)
+    {
+
+    }
+
+    public function removeContentOnDatabase(EditorArguments $editorArguments)
+    {
+        /** @var QueryBuilder $queryBuilder */
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getQueryBuilderForTable(
+                $editorArguments->getTable()
+            );
+
+        $queryBuilder->delete(
+            $editorArguments->getTable() // will be quoted
+        )->where(
+            $queryBuilder->expr()->eq(
+                $editorArguments->getIdentField(),
+                $queryBuilder->createNamedParameter(
+                    $editorArguments->getIdentValue(),
+                    PDO::PARAM_INT
+                )
+            )
+        );
+        return $queryBuilder->execute();
+
+    }
+
+    public function removeDataOnDatabase(EditorArguments $editorArguments)
+    {
+        $this->removeContentOnDatabase($editorArguments);
+    }
+
+    public function removeChildOnDatabase(EditorArguments $editorArguments, $data)
+    {
+
+    }
+
+    public function removeProgenitorOnDatabase(EditorArguments $editorArguments, $data)
+    {
+
+    }
+
+    public function removePeerOnDatabase(EditorArguments $editorArguments, $data)
+    {
+
     }
 
 }

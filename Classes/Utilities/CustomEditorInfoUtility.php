@@ -6,7 +6,7 @@ namespace Porthd\Simpledataedit\Utilities;
  *
  *  Copyright notice
  *
- *  (c) 2021 Dr. Dieter Porthd <info@mobger.de>
+ *  (c) 2021 Dr. Dieter Porth <info@mobger.de>
  *
  *  All rights reserved
  *
@@ -22,65 +22,93 @@ namespace Porthd\Simpledataedit\Utilities;
  ***************************************************************/
 
 use Porthd\Simpledataedit\Config\SdeConst;
-use Porthd\Simpledataedit\Editor\CustomEditorInfo;
+use Porthd\Simpledataedit\Domain\Model\Arguments\EditorArguments;
+use Porthd\Simpledataedit\Editor\Interfaces\CustomEditorInterface;
+use Porthd\Simpledataedit\Domain\Model\NeededTagArgs;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3Fluid\Fluid\Core\ViewHelper\TagBuilder;
 
 class CustomEditorInfoUtility
 {
 
-
     /**
-     * defines the CustomEditorInfo-object for the used editor-class
+     * defines the EditorArguments-object for the used editor-class
      *
-     * @return CustomEditorInfo
+     * @return EditorArguments
      */
-    public static function prepareCustomEditorInfoFromArgumentList(array $arguments): CustomEditorInfo
-    {
-        $customEditorInfo = GeneralUtility::makeInstance(CustomEditorInfo::class);
-        // editor -required
-        $editorName = $arguments['editor'];
-        $customEditorInfo->setEditor($editorName);
-        // pid - required for access-check
-        $pid = $arguments['pid'];
-        $customEditorInfo->setPid($pid);
+    public static function fillTagBuilderFromAttributeList(
+        TagBuilder $tagBuilder,
+        EditorArguments $customEditorInfo,
+        NeededTagArgs $argsList,
+        string $type = CustomEditorInterface::TYPE_ATTRIBUTES_EDIT
+    ): void {
+        $tagBuilder->addAttribute(
+            NeededTagArgs::TAG_ATTR_DATA_PREFIX . NeededTagArgs::TAG_ATTR_DATA_EDITOR,
+            $customEditorInfo->getEditor()
+        );
+        $tagBuilder->addAttribute(
+            NeededTagArgs::TAG_ATTR_DATA_PREFIX . NeededTagArgs::TAG_ATTR_HASH_EDIT,
+            $customEditorInfo->getHash()
+        );
 
-        // columnname of datas in the requested table
-        // fieldname - required
-        $fieldname = $arguments['fieldname'];
-        $customEditorInfo->setFieldname($fieldname);
-
-        // uid - required integer-value of the datarow (if a
-        $uid = $arguments['uid'];
-        $customEditorInfo->setUid($uid);
-        // type- default = 2 => type of data is string (allowed boolean and integer)
-        if (isset($arguments['type'])) {
-            $type = $arguments['type'];
-            $type = (in_array($type, SdeConst::MAP_ALLOWED_TYPE) ?
-                $type :
-                SdeConst::MAP_DEFAULT_TYPE
+        $list = $argsList->getAttributeList($type);
+        foreach ($list as $attribute) {
+            $getter = 'get' . Ucfirst($attribute);
+            $tagBuilder->addAttribute(
+                'data-' . strtolower($attribute),
+                $customEditorInfo->$getter()
             );
-            $customEditorInfo->setType($type);
-        } // default is SdeConst::MAP_DEFAULT_TYPE
-
-        // table - default tt_content (with respect to the extension `mask`&`mask_export` and the new `wave` of content-elements
-        if (isset($arguments['table'])) {
-            $table = $arguments['table'];
-            $customEditorInfo->setTable($table); // default is tt_content
-        } // default is 'tt_content'
-
-        // identname - default 'uid'
-        if (isset($arguments['identname'])) {
-            $identname = $arguments['identname'];
-            $customEditorInfo->setIdentname($identname);
-        } // default is 'uid');
-
-        // Params - default JSON- empty array '[]'
-        if (isset($arguments['paramList'])) {
-            $paramsJson = json_encode($arguments['paramList']);
-            $customEditorInfo->setParams($paramsJson);
         }
 
-        return $customEditorInfo;
     }
+
+    /**
+     * defines the EditorArguments-object for the used editor-class
+     *
+     * @return EditorArguments
+     */
+    public static function fillEditorArgumentsFromArgumentList(
+        array $arguments,
+        CustomEditorInterface $editor
+    ): EditorArguments {
+        $list = self::convertCommaListToList($editor, NeededTagArgs::PARAM_EDITOR_MUSTCOULD_EDIT);
+        /** @var EditorArguments $editorArguments */
+        $editorArguments = GeneralUtility::makeInstance(EditorArguments::class);
+        foreach ($list as $attribute) {
+            $setter = 'set' . Ucfirst($attribute);
+            $editorArguments->$setter(
+                $arguments['data-' . strtolower($attribute)]
+            );
+        }
+        return $editorArguments;
+    }
+
+    /**
+     * @param CustomEditorInterface $editor
+     * @param array $addList
+     * @return array
+     */
+    public static function convertCommaListToList(
+        CustomEditorInterface $editor,
+        array $addList = [],
+        $type=CustomEditorInterface::TYPE_ATTRIBUTES_EDIT
+    ): array    {
+        /** @var string $commaList */
+        $commaList = $editor::getNeededAttributes($type) . ',' . $editor::getOptionalAttributes($type);
+        $list = array_unique(
+            array_filter(
+                array_map(
+                    'trim',
+                    explode(',', $commaList)
+                )
+            )
+        );
+
+        return array_merge(
+            $addList,
+            $list
+        );
+    }
+
 
 }

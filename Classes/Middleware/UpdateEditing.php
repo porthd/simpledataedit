@@ -6,7 +6,7 @@ namespace Porthd\Simpledataedit\Middleware;
  *
  *  Copyright notice
  *
- *  (c) 2021 Dr. Dieter Porthd <info@mobger.de>
+ *  (c) 2021 Dr. Dieter Porth <info@mobger.de>
  *
  *  All rights reserved
  *
@@ -23,8 +23,11 @@ namespace Porthd\Simpledataedit\Middleware;
 
 use Exception;
 use Porthd\Simpledataedit\Config\SdeConst;
+use Porthd\Simpledataedit\Domain\Model\NeededTagArgs;
 use Porthd\Simpledataedit\Domain\Repository\GeneralRepository;
-use Porthd\Simpledataedit\Editor\CustomEditorInterface;
+use Porthd\Simpledataedit\Domain\Model\Arguments\EditorArguments;
+use Porthd\Simpledataedit\Domain\Model\Arguments\Interfaces\EditorArgumentsInterface;
+use Porthd\Simpledataedit\Editor\Interfaces\CustomEditorInterface;
 use Porthd\Simpledataedit\Services\ListOfEditorService;
 use Porthd\Simpledataedit\Utilities\CustomEditorInfoUtility;
 use Psr\Http\Message\ResponseInterface;
@@ -41,6 +44,7 @@ use TYPO3\CMS\Extbase\Service\CacheService;
  */
 class UpdateEditing implements MiddlewareInterface
 {
+    protected const LENGTH_HASH_BY_MD5 = 32;
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -50,63 +54,109 @@ class UpdateEditing implements MiddlewareInterface
 
                 $jsonArgs = json_decode(file_get_contents('php://input'), true);
                 /** @var CustomEditorInterface $editor */
-                if (($editor = ($jsonArgs['editor'] ?? '')) !== '') {
+                if (($editorName = ($jsonArgs[NeededTagArgs::TAG_ATTR_DATA_EDITOR] ?? '')) !== '') {
+                    $hash = $jsonArgs[NeededTagArgs::TAG_ATTR_HASH_EDIT];
                     $flagChange = false;
+                    $flagMade = false;
                     $editorList = GeneralUtility::makeInstance(ListOfEditorService::class);
-                    /** @var CustomEditorInterface $editor */
-                    $editor = $editorList->getItemClass($editor);
-                    $customEditorInfo = CustomEditorInfoUtility::prepareCustomEditorInfoFromArgumentList($jsonArgs);
-                    $customEditorInfo->setRaw(trim(($jsonArgs['raw'] ?? '')));
-                    $customEditorInfo->setUntrimmedRaw(($jsonArgs['raw'] ?? ''));
+                    /** @var CustomEditorInterface $editorObj */
+                    $editorObj = $editorList->getItemClass($editorName);
 
-                    $customEditorInfo->setHash(
-                        $editor->generateHash($customEditorInfo)
+                    /** @var EditorArgumentsInterface $editorArguments */
+                    $editorArguments = CustomEditorInfoUtility::fillEditorArgumentsFromArgumentList($jsonArgs,$editorObj);
+                    $checkHash = $editorObj->generateHash(
+                        $editorArguments,
+                        json_decode($jsonArgs[NeededTagArgs::TAG_ATTR_JSONRAWCONTENT])
                     );
-                    $checkHash =                         $editor->generateHash(
-                        $customEditorInfo,
-                        json_decode($jsonArgs['content'])
-                    );
+                    $flagEditor = ($editorObj !== null);
                     if (
-                        ($flag = ($editor !== null)) &&
-                        ($customEditorInfo->getRaw() !== false) &&
-                        (($jsonArgs['hash'] ?? $customEditorInfo->getHash()) !== false)
+                        ($flagEditor) &&
+
+                        (strlen($hash) === self::LENGTH_HASH_BY_MD5)
                     ) {
 
-                        $data = $editor->parseUpdateFlowPhp($customEditorInfo->getRaw(), $customEditorInfo);
-                        if (($ownMethod = $editor->getNameOfDataRequestMethod($customEditorInfo)) === false) {
-                            $oldData = $generalRepository->getSingelData($customEditorInfo);
+                        $data = $editorObj->parseUpdateFlowPhp($editorArguments->getJsonRaw(), $editorArguments);
+                        if (($ownMethod = $editorObj->getNameOfDataRequestMethod($editorArguments)) === false) {
+                            $oldData = $generalRepository->getSingelData($editorArguments);
                         } else {
-                            $oldData = $editor->$ownMethod($customEditorInfo);
+                            $oldData = $editorObj->$ownMethod($editorArguments);
                         }
                         $flag = false;
-                        if (($checkHash === $editor->generateHash($customEditorInfo, $oldData)) &&
+                        $flagType = 0;
+                        if (($checkHash === $editorObj->generateHash($editorArguments, $oldData)) &&
                             ($flagChange = ($data !== $oldData))
                         ) {
-                            if (($customUpdate = $editor->getNameOfDataUpdateMethod($customEditorInfo)) === false) {
-                                $flag = $generalRepository->updateDataOnDatabase(
-                                    $customEditorInfo,
-                                    $data
-                                );
+                            if (($customUpdate = $editorObj->getNameOfDataUpdateMethod($editorArguments)) === false) {
+                                $doType = $editorObj->getTypeOfDataUpdateMethod($editorArguments);
+                                switch ($doType) {
+                                    case 'makeContent':
+                                    case 'makeData':
+                                    case 'makeChild':
+                                    case 'makeProgenitor':
+                                    case 'makePeer':
+                                        $flagType = 'made';
+                                        $reposioryTypeMethod = lcfirst($doType).'OnDatabase';
+                                        $flag = $generalRepository->$reposioryTypeMethod(
+                                            $editorArguments,
+                                            $data
+                                        );
+                                        break;
+                                    case 'removeContent':
+                                    case 'removeData':
+                                    case 'removeChild':
+                                    case 'removeProgenitor':
+                                    case 'removePeer':
+                                        $flagType = 'remove';
+                                        $reposioryTypeMethod = lcfirst($doType).'OnDatabase';
+                                        $flag = $generalRepository->$reposioryTypeMethod(
+                                            $editorArguments
+                                        );
+                                        break;
+                                    default : {
+                                        $flagType = 'edit';
+                                        $flag = $generalRepository->updateDataOnDatabase(
+                                            $editorArguments,
+                                            $data
+                                        );
+                                        break;
+                                    }
+                                }
                             } else {
-                                $flag = $editor->$customUpdate($data, $customEditorInfo);
+                                $flag = $editorObj->$customUpdate($data, $editorArguments);
                             }
                             /** @var CacheService $cacheService */
                             $cacheService = GeneralUtility::makeInstance(CacheService::class);
-                            $cacheService->clearPageCache($customEditorInfo->getPid());
+                            $cacheService->clearPageCache($editorArguments->getStoragePid());
                         }
                     }
 
                     $responseFactory = GeneralUtility::makeInstance(ResponseFactory::class);
                     $response = $responseFactory->createResponse();
                     if ($flag) {
-                        $response->withStatus(200, 'Content-editing is updated.')
-                            ->withHeader('Content-Type', 'application/json; charset=utf-8');
-                        $response->getBody()->write(
-                            json_encode([
-                                'status' => 'ok',
-                                'hash' => $customEditorInfo->getHash(),
-                            ])
-                        );
+                        switch($flagType)
+                        {
+                            case 'made':
+                                break;
+                            case 'remove':
+                                $response->withStatus(200, 'Content-editing is remove.')
+                                    ->withHeader('Content-Type', 'application/json; charset=utf-8');
+                                $response->getBody()->write(
+                                    json_encode([
+                                        'status' => 'ok',
+                                        'hash' => $editorArguments->getHash(),
+                                    ])
+                                );
+                                break;
+                            default :
+                                $response->withStatus(200, 'Content-editing is updated.')
+                                    ->withHeader('Content-Type', 'application/json; charset=utf-8');
+                                $response->getBody()->write(
+                                    json_encode([
+                                        'status' => 'ok',
+                                        'hash' => $editorArguments->getHash(),
+                                    ])
+                                );
+                        }
                         return $response;
                     } else {
                         if (!$flagChange) {
@@ -114,10 +164,20 @@ class UpdateEditing implements MiddlewareInterface
                             $response->getBody()->write(
                                 json_encode([
                                     'status' => 'ok',
-                                    'hash' => $customEditorInfo->getHash(),
+                                    'hash' => $editorArguments->getHash(),
                                 ])
                             );
                             return $response;
+                        } else if ($flagMade) {
+                            $response->withStatus(200, 'Content-editing is updated.')
+                                ->withHeader('Content-Type', 'application/json; charset=utf-8');
+                            $response->getBody()->write(
+                                json_encode([
+                                    'status' => 'ok',
+                                    'hash' => $editorArguments->getHash(),
+                                ])
+                            );
+
                         }
                     }
                 }

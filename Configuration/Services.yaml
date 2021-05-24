@@ -1,0 +1,17 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: true
+
+  Porthd\Simpledataedit\:
+    resource: '../Classes/*'
+
+  cache.simpledataedit_configsave:
+    class: TYPO3\CMS\Core\Cache\Frontend\VariableFrontend
+    factory: ['@TYPO3\CMS\Core\Cache\CacheManager', 'getCache']
+    arguments: ['simpledataedit_configsave']
+
+  Porthd\Simpledataedit\Cache\ConfigSaveCache:
+    arguments:
+      $cache: '@cache.simpledataedit_configsave'

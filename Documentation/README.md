@@ -116,7 +116,7 @@ always | bool | false | Always allow front-end editing for everyone. The allowan
 ### Create your own editor
 An editor class must provide the functions of the interface `CustomEditorInterface`.
 The parameters are transferred via a `CustomEditorInfo` class,
-which is derived from the interface `CustomEditorInfoInterface`.
+which is derived from the interface `EditorArgumentsInterface`.
 It is currently not possible to override the `CustomEditorInfo` with a separate class.
 
 ### Example for editor class
@@ -138,7 +138,7 @@ Define the following code block in your `ext_localconf.php`:
            $listOfCustomEditorClasses
        );
    ```
-The static method ensures that your class name is entered in $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['simpledataedit']['editor']['editor'] ['your-whoAmI-name'].
+The static method ensures that your class name is entered in $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['simpledataedit']['editor']['editor'] ['your-whoAmI-name'].
 To avoid the likelihood of unwanted overwrites, your whoAmI name should contain your vewndor name.
 
 ## To do
@@ -154,3 +154,10 @@ To avoid the likelihood of unwanted overwrites, your whoAmI name should contain 
 1. Generalized queries for creating/deleting/changing simple relations
 1. Generalized queries for creating/deleting/changing MM relations
 1. Deleting relations and creating new default objects
+
+### Changes 
+1. extend & restructure the CustomEditorInterface
+1. extend and restructure EditorArgumentsInterface; replace CustomEditorInfoInterface from former version
+1. extend relation-parameters
+1. extend create and delete
+1. define prepare for languages-Parameter (not in use yet)

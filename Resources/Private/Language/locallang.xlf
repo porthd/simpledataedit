@@ -4,18 +4,6 @@
           product-name="simpledataedit">
         <header/>
         <body>
-            <trans-unit id="simpledataedit.message.templateUndefined.1">
-                <source><![CDATA[
-                    <h2>No Example defined</h2>
-                    <div>For ths content-element for the CType `%s` is missing a simpledataedit-example. It may be defined later.</div>
-                    <div><strong>Try the content-element `text`.</strong></div>
-                ]]></source>
-                <target><![CDATA[
-                    <h2>Kein Beispiel definiert</h2>
-                    <div>Für das Content-Element mit dem CType `%s` fehlt eine Beispiel mit simpledataedit. Vielleicht kommt es in Zukunft.</div>
-                    <div><strong>Probiere das Content-Element `text`.</strong></div>
-                ]]></target>
-            </trans-unit>
         </body>
     </file>
 </xliff>
