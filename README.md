@@ -21,7 +21,6 @@ in a specific database at a specific record using a generalized AJAX process.
 A hash value for each data record ensures that the change is always based on the text just seen before.
 Several editors cannot unknowingly (!) Overwrite each other's texts.
 
-
 ## How does the editor work?
 
 1. The editor logs into the backend of the website.
