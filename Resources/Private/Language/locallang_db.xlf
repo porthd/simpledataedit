@@ -4,14 +4,6 @@
           product-name="simpledataedit">
         <header/>
         <body>
-            <trans-unit id="simpleDataEdit.testLayout.title">
-                <source>Test page for SimpleDataEdit</source>
-                <target>Testseite für SimpleDataEdit</target>
-            </trans-unit>
-            <trans-unit id="simpleDataEdit.testLayout.testCol">
-                <source>Test column with special ColPos (only?) For SimpleDataEdit</source>
-                <target>Testspalte mit besonderer ColPos (nur?)für SimpleDataEdit</target>
-            </trans-unit>
             <trans-unit id="extension.template.constants.blackboard.flagAllowAlways">
                 <source>Always Javascript?: Should the basic JavaScript always be loaded (true) or only when the backend user is logged in?</source>
                 <target>Immer Javascript?:Soll das Basis-JavaScript immer(true) oder nur bei eingeloggten Backenduser geladen werden?</target>

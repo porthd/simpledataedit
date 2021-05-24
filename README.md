@@ -21,6 +21,7 @@ in a specific database at a specific record using a generalized AJAX process.
 A hash value for each data record ensures that the change is always based on the text just seen before.
 Several editors cannot unknowingly (!) Overwrite each other's texts.
 
+
 ## How does the editor work?
 
 1. The editor logs into the backend of the website.
@@ -115,7 +116,7 @@ always | bool | false | Always allow front-end editing for everyone. The allowan
 ### Create your own editor
 An editor class must provide the functions of the interface `CustomEditorInterface`.
 The parameters are transferred via a `CustomEditorInfo` class,
-which is derived from the interface `CustomEditorInfoInterface`.
+which is derived from the interface `EditorArgumentsInterface`.
 It is currently not possible to override the `CustomEditorInfo` with a separate class.
 
 ### Example for editor class
@@ -137,7 +138,7 @@ Define the following code block in your `ext_localconf.php`:
            $listOfCustomEditorClasses
        );
    ```
-The static method ensures that your class name is entered in $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['simpledataedit']['editor']['editor'] ['your-whoAmI-name'].
+The static method ensures that your class name is entered in $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['simpledataedit']['editor']['editor'] ['your-whoAmI-name'].
 To avoid the likelihood of unwanted overwrites, your whoAmI name should contain your vewndor name.
 
 ## To do

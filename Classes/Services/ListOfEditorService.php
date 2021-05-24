@@ -6,7 +6,7 @@ namespace Porthd\Simpledataedit\Services;
  *
  *  Copyright notice
  *
- *  (c) 2021 Dr. Dieter Porthd <info@mobger.de>
+ *  (c) 2021 Dr. Dieter Porth <info@mobger.de>
  *
  *  All rights reserved
  *
@@ -22,7 +22,7 @@ namespace Porthd\Simpledataedit\Services;
  ***************************************************************/
 
 use Porthd\Simpledataedit\Config\SdeConst;
-use Porthd\Simpledataedit\Editor\CustomEditorInterface;
+use Porthd\Simpledataedit\Editor\Interfaces\CustomEditorInterface;
 use Porthd\Simpledataedit\Exception\SimpledataeditException;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -34,7 +34,7 @@ class ListOfEditorService implements SingletonInterface
 {
 
     private const MAIN_GLOBALS_PART = 'TYPO3_CONF_VARS';
-    private const MAIN_GLOBALS_SUBPART = 'EXTCONF';
+    private const MAIN_GLOBALS_SUBPART = 'EXTENSIONS';
 
 
     // Hold the class instance.
@@ -161,31 +161,36 @@ class ListOfEditorService implements SingletonInterface
         $this->list = [];
         // Call post-processing function for constructor:
         if ((is_array($GLOBALS[self::MAIN_GLOBALS_PART][self::MAIN_GLOBALS_SUBPART][$extensionName][$subkey])) &&
-            (count($GLOBALS[self::MAIN_GLOBALS_PART][self::MAIN_GLOBALS_SUBPART][$extensionName][$subkey]) > 0)
+            (
+                count(
+                    ($classList = $GLOBALS[self::MAIN_GLOBALS_PART][self::MAIN_GLOBALS_SUBPART][$extensionName][$subkey])
+                ) > 0
+            )
         ) {
             $flagFirst = true;
             $this->last = null;
             $this->first = null;
             $this->current = null;
             $selfName = '';
-            foreach ($GLOBALS[self::MAIN_GLOBALS_PART][self::MAIN_GLOBALS_SUBPART][$extensionName][$subkey] as $className) {
+            foreach ($classList as $className) {
                 $classInterface = class_implements($className);
                 if (in_array($interfaceCheckName, $classInterface)) {
                     $classObject = GeneralUtility::makeInstance($className);
                     $selfName = $classObject::whoAmI();
                     $this->list[$selfName]['instance'] = $classObject;
                     $this->list[$selfName]['selfName'] = $selfName;  // The key of this element is not Part of the Point
+                    $this->list[$selfName]['prev'] = null;  // generate this part of object, because the generation via reference seems not to work
+                    $this->list[$selfName]['next'] = null;  // generate this part of object, because the generation via reference seems not to work
                     if ($flagFirst) {
                         $this->first = &$this->list[$selfName];
                         $this->current = $this->first;
                         $this->last = $this->first;
-                        $this->current['prev'] = null;
-                        $this->current['next'] = null;
                         $flagFirst = false;
                     } else {
+                        $oldSelfName = $this->current['selfName'];
+                        $this->list[$oldSelfName]['next'] = &$this->list[$selfName];
+                        $this->list[$selfName]['prev'] = &$this->list[$oldSelfName];
                         $this->last = &$this->list[$selfName];
-                        $this->last['prev'] = $this->current;
-                        $this->current['next'] = $this->last;
                         $this->current = $this->last;
                     }
                 }

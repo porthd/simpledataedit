@@ -1,0 +1,88 @@
+# template for your own editor. Most of the variables are strings or numbers.
+# You need only a subset of EditorArguments for the most subcases
+# There are the common variables listed for
+# - simple data-editing,
+# 1:n- Create/ delete (planed)
+# N:1 create/delete (planed)
+# M:N create/delete (planed)
+# M/N change (planed)
+#
+# The yaml-File beginn the strutcure with the main-word `editor`.
+# the subcatogorie is you definition key. It is recommended to use something like that: `myVendor-myExtension-myEditor`
+# editor
+#  whoAmI-Result
+#    definedAttributeOne:
+#    definedAttributeTwo:
+#    ...
+---
+editor
+  whoAmI-Result
+  porthd-templateForListOfAllAttributes
+    # data
+    delField: 'deleted' # data
+    fieldName: ''
+    identField: ''
+    identValue: 0
+    sortField: 'sorting'
+    sortValue: 0
+    storagePid: 0
+    table: ''
+    always: false # divers
+    flagDebug: false
+    hash: ''
+    log: ''
+    logList: []
+    paramList: []
+    jsonRaw: ''
+    roles: ''
+    type: ''
+    # editor - main Definition for object `editorArguments`
+    message: ''
+    # Frontend
+    attributeName: '';
+    inScope: true;
+    marker: '###?###';
+    nullElement: '';
+    selector: '';
+    template: '';
+    # helper
+    listOfJsonValues: []
+    attributesHash: ''
+    # interRelated
+    mnTable: ''
+    toLocalField: 'uid_local'
+    toLocalSort: 'sorting'
+    toLocalSortValue: 0
+    toLocalTable: ''
+    toLocalValue: ''
+    toForeignField: 'uid_foreign'
+    toForeignSort: 'sorting_foreign'
+    toForeignSortValue: 0
+    toForeignTable: ''
+    toForeignValue: ''
+    # langData
+    flagLangDefault: true
+    langDiffSource: ''
+    langId: 0
+    langListUidOrigSource: ''
+    langOrigUid: 0
+    # langRelated
+    flagRelatedLangDefault: true
+    relatedLangDiffSource: ''
+    relatedLangId: 0
+    relatedLangListUidOrigSource: ''
+    relatedLangOrigUid: 0
+    # naming
+    doname: 'edit' # SdeConst::DONAME_EDIT_DATA
+    editor: ''
+    fluidData: []
+    jsonData: ''
+    yamlDataPath: ''
+    # related
+    relatedByField: ''
+    relatedToField: ''
+    relatedSortField: ''
+    relatedSortValue: 0
+    relatedStoragePid: ''
+    relatedTable: ''
+    relatedValue: 0

@@ -6,7 +6,7 @@ namespace Porthd\Simpledataedit\Middleware;
  *
  *  Copyright notice
  *
- *  (c) 2021 Dr. Dieter Porthd <info@mobger.de>
+ *  (c) 2021 Dr. Dieter Porth <info@mobger.de>
  *
  *  All rights reserved
  *
@@ -23,6 +23,8 @@ namespace Porthd\Simpledataedit\Middleware;
 
 use Exception;
 use Porthd\Simpledataedit\Config\SdeConst;
+use Porthd\Simpledataedit\Domain\Model\Arguments\EditorArguments;
+use Porthd\Simpledataedit\Editor\Interfaces\CustomEditorInterface;
 use Porthd\Simpledataedit\Exception\SimpledataeditException;
 use Porthd\Simpledataedit\Services\ListOfEditorService;
 use Psr\Http\Message\ResponseInterface;
@@ -50,9 +52,13 @@ if (typeof PorthdSimpledataedit === 'undefined') {
 
 PorthdSimpledataedit = {
     ...PorthdSimpledataedit,
-    focusin: {
+    fullPropertyList: {
 EOD;
-    private const INITIAL_JAVASCRIPT_INLINE_CODE_MIDDLE = <<<EOD
+    private const INITIAL_JAVASCRIPT_INLINE_CODE_FOCUSIN = <<<EOD
+    },
+    focusin: {   
+EOD;
+    private const INITIAL_JAVASCRIPT_INLINE_CODE_FOCUSOUT = <<<EOD
     },
     focusout: {   
 EOD;
@@ -93,6 +99,7 @@ EOD;
             $this->addDynamicJavascript($extensionConfig); // javascript in Head
             $this->addBasicFooterJavascript($extensionConfig); //
             $this->addBasicStylesheet($extensionConfig);
+
         }
         return $handler->handle($request);
     }
@@ -106,23 +113,42 @@ EOD;
         $inlineCode = '';
         /** @var ListOfEditorService $editorList */
         $editorList = GeneralUtility::makeInstance(ListOfEditorService::class);
+        $editorArguments = GeneralUtility::makeInstance(EditorArguments::class);
         if ($editorList->goFirst()) {
+            $flagForTestCode = (in_array(
+                strtolower(
+                    Environment::getContext()
+                ),
+                ['development', 'testing'])
+            );
             $focusInCode = '';
             $focusOutCode = '';
+            $testingCode = '';
+            $attributeList = $editorArguments->getInitViewhelperParameter();
+            $attributeKeyList = array_keys($attributeList);
+            $commaListAttributeKeys = implode(',', $attributeKeyList);
             do {
-                $focusInCode .= $editorList->getCurrentClass()->parseJsFocusinContentToInnerHtml() . "\n";
-                $focusOutCode .= $editorList->getCurrentClass()->parseJsFocusoutInnerHtmlToContent() . "\n";
+                /** @var CustomEditorInterface $editor */
+                $editor = $editorList->getCurrentClass();
+                $focusInCode .= $editor->parseJsFocusinContentToInnerHtml() . "\n";
+                $focusOutCode .= $editor->parseJsFocusoutInnerHtmlToContent() . "\n";
+                if ($flagForTestCode) {
+                    $testingCode .= $editor->additionalJsTestingCode() . "\n";
+                }
             } while ($editorList->goNext());
             $inlineCode .= self::INITIAL_JAVASCRIPT_INLINE_CODE_INIT;
             $inlineCode .= self::INITIAL_JAVASCRIPT_INLINE_CODE_START;
+            $inlineCode .= strtolower($commaListAttributeKeys);
+            $inlineCode .= self::INITIAL_JAVASCRIPT_INLINE_CODE_FOCUSIN;
             $inlineCode .= $focusInCode;
-            $inlineCode .= self::INITIAL_JAVASCRIPT_INLINE_CODE_MIDDLE;
+            $inlineCode .= self::INITIAL_JAVASCRIPT_INLINE_CODE_FOCUSOUT;
             $inlineCode .= $focusOutCode;
             $inlineCode .= self::INITIAL_JAVASCRIPT_INLINE_CODE_END;
-            $currentApplicationContext = Environment::getContext();
-            if (strpos(strtolower($currentApplicationContext), 'development') === 0) {
 
+            //
+            if ($flagForTestCode) {
                 $inlineCode .= self::INITIAL_JAVASCRIPT_INLINE_CODE_TEST;
+                $inlineCode .= $testingCode;
             }
         }
         return $inlineCode;
@@ -151,7 +177,8 @@ EOD;
     {
         $inlineJavaScript = $this->generateInlineJavaScript();
         if (!empty($extensionConfig[SdeConst::KEY_STATIC_TEMP_JSDYNAMIC])) {
-            $source = GeneralUtility::getFileAbsFileName($extensionConfig[SdeConst::KEY_STATIC_TEMP_JSDYNAMIC]);
+            $source = GeneralUtility::getFileAbsFileName($extensionConfig[SdeConst::
+            KEY_STATIC_TEMP_JSDYNAMIC]);
             if ((!file_exists($source)) ||
                 (hash_file("md5", $source) !== md5($inlineJavaScript))
             ) {

@@ -1,5 +1,5 @@
 .idea
-.github*
+/vendor/
 ~*.*
 202*.*
 203*.*

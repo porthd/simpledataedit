@@ -4,7 +4,7 @@
  *
  *  Copyright notice
  *
- *  (c) 2021 Dr. Dieter Porthd <info@mobger.de>
+ *  (c) 2021 Dr. Dieter Porth <info@mobger.de>
  *
  *  All rights reserved
  *
@@ -29,19 +29,21 @@ call_user_func(function () {
     // declare namespace in fluid-taemplates
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['namespaces']['simpledataedit'] = ['Porthd\\Simpledataedit\\ViewHelpers'];
 
-    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig(
-        "@import 'EXT:simpledataedit/Configuration/TsConfig/Page/all.tsconfig'"
-    );
-
     /**
      * define your own editor-class, if you have special elements
      */
     $whoAmI = 'whoAmI';  // if i use the name directly, PHPStorm remarks it with a warning ;-(
     $listOfCustomEditorClasses = [
-        \Porthd\Simpledataedit\Editor\PlainTextEditor::$whoAmI() =>
-            \Porthd\Simpledataedit\Editor\PlainTextEditor::class,
+        \Porthd\Simpledataedit\Editor\Methods\PlainTextEditor::$whoAmI() =>
+            \Porthd\Simpledataedit\Editor\Methods\PlainTextEditor::class,
     ];
     \Porthd\Simpledataedit\Utilities\ConfigurationUtility::mergeCustomGlobals(
         $listOfCustomEditorClasses
     );
+
+    /** Cache-registration - use VariableFrontend in the Frontend */
+    if (!is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['simpledataedit_configsave'])) {
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['simpledataedit_configsave'] = [];
+    }
+
 });

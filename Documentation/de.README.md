@@ -1,14 +1,30 @@
 # TYPO3-Extension "simpledataedit"
+## Vorwort
+Wenn man als Chemiker systematisch untersuchen möchte, welchen Einfluß bestimmte 
+Reaktionsbedingungen auf den Ablauf einer chemischen Reaktion haben, dann braucht man dafür das Ergebnis einer Vielzahl 
+von durchgeführten Synthesen in vielen verschiedenen Variationen.
+Für die statistische Synthesen sollten die Ergebnisse der Reaktionen in einer Datenbank abgelegt sein. 
+Nun führen weltweit viele Studenten im Studium ähnliche einfache Reaktionen unter verschiedenen Bedingungen durch.
+Es wäre also cool, wenn die Studenten die verschiedeben Beobachtungen und Rahmenbedingungen ihrer Synthesen in eine Datenbank eingeben würden. 
+Im Idealfall wäre die Eingabemaske so aufgebaut, dass mit jeder weitere Eingabe das Synstheseprotokoll der Studenten Form annimmt.
+Die Studenten würde für ihre Eingabe ein fertige Protokoll erhalten, dass sie nicht mehr selbst schreiben müssten. 
+Mit simpledataedit stellt die  Basis für eine dynamisches Eingabe-Maske dar, die dafür sogt, dass die Daten gemäß der Regeln der datenbanknormalisierung abgelegt werden.
+Dies erklärt vielleicht auch, warum mit die Übersetzungen und Richt-Text-Anwendungen relativ egal sind.  
+
+
+#### Version: 20210418
+#### Vorbemerkung 
+Beim Erstellen der Dokumentation ist die deutsche Version führend. 
+Die englische Version wird mittels des Google-Translator immer nachrangig erstellt. Der Vergleich des Versionsdatum erlaubt die Prüfung, ob die Übersetzung dem aktuellen Stand entspricht.
 
 ####Prolog Hilfssatz für Schreiberlinge
 Eine guter Zeitungsartikel skizziert im ersten Absatz/Satz folgenden Merksatz der Informationsbedürfnisse:
 - Wer tut was mitWem/womit wann, wo und wie? 
 - Das Warum im zweiten Absatz ist wie der 2. Hauptsatz der Thermodynamik immer Glaubenssache?
-- Wer falsche Fragen stellt, wird immer eines sicher bekommen: falsche Antworten! (*Ich hoffe, ich habe nicht zuviel falsche Fragen hier beschreibend beantwortet.* ;-)
- 
+- Wer falsche Fragen stellt, bekommt auch mit tausend Forschern und Milliarden für die Forschung immer nur eines: falsche Antworten! (*Wie stark treibt Kohlenstoffdioxid den Klimawandel voran? Ich glaube, dass ist eine falsche Frage. Statt `stark` wäre `minimal` treffender.* ;-)
 
 ## Wer tut was mitWem/womit wann, wo und wie?
-Die Extenstion speichert einfache Text-Änderungen 
+Die Extention speichert einfache Text-Änderungen 
 in editierbaren Bereichen des Frontends der Webseite 
 direkt in der Datenbank via Ajax/JavasScript,
 wenn der Redakteur gleichzeitig im Backend eingeloggt ist und 
@@ -32,7 +48,7 @@ Mehrere Redakteure können sich nicht unwissentlich(!) gegenseitig die Texte üb
 ### Technische Voraussetzungen?
 - ein moderner Browser
 
-### Was geht nicht?
+### Was geht aktuell nicht?
 Von CRUDE (Create, Read, Update, Delete, Edit) geht aktuell eingeschränkt nur RUE.
 
 1. In Multi-Domain-Aufsetzungen werden die BE_TYPO3_USER-Cookies nur in der aktuellen Domain
@@ -42,8 +58,8 @@ gesetzt, in welcher sich der Redakteur eingeloggt hat. Wenn man in der Domain B 
 4. Das Neuanlegen oder Löschen von Datensätzen wird nicht unterstützt.
 5. Das Ändern von Daten in Attributen oder von leeren, nichtangezeigten Datenfeldern.
 
-### Was könnte in Zukunft gehen?
-bei den folgenden zwei Punkten hoffe ich auf die Community:
+### Was könnte/sollte es in Zukunft geben?
+Bei den folgenden Punkten hoffe ich auf die Community:
 1. Formalisierte Felder machen den Editierprozess komplexer. 
    Dies sollte sich mit neuen Editor-Klassen erledigen lassen.
    Die Extension erlaubt die Definition und Einbindung von  `Editor`-Klassen.
@@ -54,10 +70,12 @@ bei den folgenden zwei Punkten hoffe ich auf die Community:
    Dies sollte sich mit neuen Editor-Klassen erledigen lassen.
    Die Extension erlaubt die Definition und Einbindung von  `Editor`-Klassen.
    
-Bei den anderen beiden Punkten ist ein leichtes Umdenken der Entwickler erforderlich. 
+Bei den anderen Punkten ist ein leichtes Umdenken der Entwickler erforderlich.
+Dies wird aber vom Entwickler vorangetrieben werden.
 1. Das Neuanlegen und Löschen von Datensätzen wird nicht unterstützt. 
 2. Das Neuanlegen und Löschen von neuen Relationen zu bestehenden Datensätzen wird nicht unterstützt.
 3. Das Neuanlegen und Löschen von neuen Relationen zu neu zu schaffenden Datensätzen wird nicht unterstützt.
+4. Die Zahl der Angaben beim Viewhelper systematisch reduzieren, was die Sicherheit durch Obsurität erhöht. 
 
 Warum ist Umdenken erforderlich? (Ich schließe hier mal von mir auf andere.) Im TYPO3-Backend wird eine Datensatz erst geschaffen, wenn er explizit gespeichert wird. Die erlaubt vorm Speichern den Datensatz zu Editieren. 
 Beim hier vorgestellten Konzept muss man dagegen einen Default-Datensatz schaffen. 
@@ -66,23 +84,19 @@ verfügbar zu haben. Man muss also sich tiefergehend als bisher Gedanken machen,
 welche Daten ein initialer Datensatz enthalten muss und dies nicht nur in der TCA sondern auch im Modell verankern.     
 
 ## Was muss der Integrator machen
+
+### Aktueller Status
 Aktuell werden nur trimmbare PlainText-Felder unterstützt.
 Der Integrator muss nur die ensprechenden Datenfelder mit dem Viewhhelper
 `<simpledataedit:editor ...>` einschließen.
 
-### Gibt es für Integratoren einen Beispiel-Code?
-Um auch in einem Live-System und klassicher Form des Extension-Uploads einen störungsfreien Test zu ermöglihen,
-bringt die Extension ein eigenes Backend-Layout mit.
-Um diese für den Test benutzen zu können, muss auch das exemplarische TypoScript eingebunden werden.  
+### Beispiele
+Es gibt die Beispiel-Extension *simpledataedittest*.
 
-Das Backend-Layout definiert nämlich eine Testspalte mit dem ColPos-Wert (7387).
-Nach dem Aktivieren des Test-TypoScripts dieser Extension, wird auf einer Testseite in der Spalte (7387)
-das `header`-Field in einem speziellen Temülate für das TYPO3 `Text-only`-Contentelement editierbar gemacht.
-(siehe Code *simpledataedit/Resources/Private/Templates/FluidElements/Text.html*)
-
-### Styles anpassen
-In den Settings der Extension ist der Pfad zum JavaScript 
-und zu den Styles mit angegeben.
+### Styles und JavaScript anpassen
+In den Settings der Extension ist der Pfad zur JavaScript-Datei 
+und zur Datei der CSS-Styles angegeben. 
+Durch Überschreiben der Definition kann der Entwickler eine eigene Datei einbinden.
 
 ## Was ist das Arbeitsprinzip der Extension? Wie ist der Workflow?
 Das Arbeitsprinzip ist einfach.
@@ -116,30 +130,28 @@ immer | bool | false |                  Erlaube immer die Frontend-Bearbeitung f
 ### Erstellen eines eigenen Editors
 Eine Editor-Klasse muss die Funktionen des Interface `CustomEditorInterface` bereitstellen.
 Der Transfer der Parametern wird über eine Klasse `CustomEditorInfo` realisiert, 
-die sich von dem Interface `CustomEditorInfoInterface` ableitet.
+die sich von dem Interface `EditorArgumentsInterface` ableitet.
 Aktuell ist es nicht möglich, die `CustomEditorInfo` durch eine eigenen Klasse übersteuern zu lassen. 
 
-### Beispiel für Editor-Klasse
-siehe im Code *simpledataedit\Classes\Editor\PlainTextEditor.php*
-
-   ### Einbau der Editor-Klasse in eigene Extension
-   Wenn sie ihre Klasse *MyVendor\MyExtension\Editor\MyEditor* definiert haben, muss diese natürlich dem System noch bekannt gegeben werden. 
-   Definieren sie in ihrer `ext_localconf.php` folgenden Code-Block:
-   ```
-     /**
-        * define your own editor-class, if you have special elements
-        */
-       $whoAmI = 'whoAmI';  // if i use the name directly, PHPStorm remarks it with a warning ;-(
-       $listOfCustomEditorClasses = [
-           \MyVendor\MyExtension\Editor\MyEditor::$whoAmI() =>
-               \MyVendor\MyExtension\Editor\MyEditor::class,
-       ];
-       \Porthd\Simpledataedit\Utilities\ConfigurationUtility::mergeCustomGlobals(
-           $listOfCustomEditorClasses
-       );
-   ```
-   Die statische Methode sorgt dafür, daß ihre Klassenname in $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['simpledataedit']['editor']['editor']['Ihr-whoAmI-Name'] eingetragen wird.
-   Um die Wahrscheinlichkeit von ungewollten Überschreibungen zu vermeiden, sollte ihr whoAmI-Name ihren vewndor-Namen enthalten. 
+### Einbau der eigener Editor-Klassen für besondere Anwendungen
+In der Beispielextension wird die Code-Kopie von PlainTextEditor als eigene Klasse eingebaut.
+Wenn sie ihre Klasse *MyVendor\MyExtension\Editor\MyEditor* definiert haben, muss diese natürlich dem System noch bekannt gegeben werden. 
+Definieren sie in ihrer `ext_localconf.php` folgenden Code-Block:
+```
+  /**
+     * define your own editor-class, if you have special elements
+     */
+    $whoAmI = 'whoAmI';  // if i use the name directly, PHPStorm remarks it with a warning ;-(
+    $listOfCustomEditorClasses = [
+        \MyVendor\MyExtension\Editor\MyEditor::$whoAmI() =>
+            \MyVendor\MyExtension\Editor\MyEditor::class,
+    ];
+    \Porthd\Simpledataedit\Utilities\ConfigurationUtility::mergeCustomGlobals(
+        $listOfCustomEditorClasses
+    );
+```
+Die statische Methode sorgt dafür, daß ihre Klassenname in $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['simpledataedit']['editor']['editor']['Ihr-whoAmI-Name'] eingetragen wird.
+Um die Wahrscheinlichkeit von ungewollten Überschreibungen zu vermeiden, sollte ihr whoAmI-Name ihren vendor-Namen enthalten. 
 
 
 ## To Do

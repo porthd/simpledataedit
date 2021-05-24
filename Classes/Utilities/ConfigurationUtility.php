@@ -6,7 +6,7 @@ namespace Porthd\Simpledataedit\Utilities;
  *
  *  Copyright notice
  *
- *  (c) 2021 Dr. Dieter Porthd <info@mobger.de>
+ *  (c) 2021 Dr. Dieter Porth <info@mobger.de>
  *
  *  All rights reserved
  *
@@ -21,23 +21,66 @@ namespace Porthd\Simpledataedit\Utilities;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use Exception;
 use Porthd\Simpledataedit\Config\SdeConst;
+use Porthd\Simpledataedit\Editor\Interfaces\CustomEditorInterface;
 use Porthd\Simpledataedit\Exception\SimpledataeditException;
 
 class ConfigurationUtility
 {
 
     /**
+     * @param array $listOfKeyAndClasses
+     * @throws SimpledataeditException
+     * @api
+     */
+    public static function addEditorClassesToSimpledateedit(array $listOfKeyAndClasses) {
+        foreach ($listOfKeyAndClasses as $key => $className) {
+            if ((!( $list = class_implements($className))) &&
+                (!in_array(CustomEditorInterface::class,$list))
+            ) {
+                throw new SimpledataeditException(
+                    'The array-entry for the editor-class `'.$key.'->'.$className.'` did not implement the interface ``'.
+                    CustomEditorInterface::class .
+                    ' Please check the ext_localconf.php of the CustomEditorInterface::class extension and/or the related class.',
+                    1620579447,
+                );
+            }
+        }
+        self::mergeCustomGlobals(
+            $listOfKeyAndClasses,
+            SdeConst::SELF_NAME,
+            SdeConst::SUBKEY_EDITOR
+        );
+    }
+
+    /**
+     * @param array $listOfExtsionnameAndYamlfiles
+     * @throws SimpledataeditException
+     * @api
+     */
+    public static function addYamlatorConfigsToSimpledateedit(array $listOfExtsionnameAndYamlfiles) {
+        self::mergeCustomGlobals(
+            $listOfExtsionnameAndYamlfiles,
+            SdeConst::SELF_NAME,
+            SdeConst::SUBKEY_YAMLATOR
+        );
+    }
+
+    /**
      * Add your timer-classes to the list by using the unique index-name of your timer.
      * Your timer-class must implement interface Porthd\Timer\CustomTimer\TimerInterface
      * used in `ext_localconf.php`
      *
+     * you can check this definition in TYPO3-Backend by the modul `configuration` from the TYPO3-core extention `lowlevel` (namespace: \TYPO3\CMS\Lowlevel)
+     *
      * example for input:
      * $listOfCustomTimerClasses[YearlyTimer::timerIndexValue()] = DailyTimer::class;
      *
-     * @param array $listOfTimerClasses
-     * @api
-     *
+     * @param array $mapOfKeyAndClasses
+     * @param string $extensionName
+     * @param string $subkey
+     * @throws SimpledataeditException
      */
     public static function mergeCustomGlobals(
         array $mapOfKeyAndClasses,
@@ -49,7 +92,7 @@ class ConfigurationUtility
         foreach ($mapOfKeyAndClasses as $key => $className) {
             self::expandNestedArray(
                 $GLOBALS,
-                ['TYPO3_CONF_VARS', 'EXTCONF', $extensionName, $subkey, $key],
+                ['TYPO3_CONF_VARS', 'EXTENSIONS', $extensionName, $subkey, $key],
                 $className,
                 true
             );
@@ -60,8 +103,7 @@ class ConfigurationUtility
      * The method use a path to add into a nested array a new leaf or into an empty array, if the path is free.
      * Existing parts won't be overridden. Otherwise it flags a FALSE.
      *
-     * similiar solution see the array-fraework (https://github.com/minwork/array)
-     * @testing 20191223
+     * similiar solution see the array-framework (https://github.com/minwork/array)
      *
      * @param mixed &$check
      * @param array $nestList
